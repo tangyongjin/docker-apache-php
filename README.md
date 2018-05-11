@@ -1,4 +1,4 @@
-docker-apache-php
+docker-base
 
 
 基础容器:
@@ -10,3 +10,7 @@ docker-apache-php
 php错误日志:
    /tmp/php_error.log
 
+
+<Directory /var/www/html>
+                AllowOverride All
+</Directory>

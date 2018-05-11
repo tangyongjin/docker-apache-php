@@ -23,6 +23,6 @@ RUN add-apt-repository -y ppa:ondrej/apache2
 RUN apt-get update  &&   apt-get -y install apache2 &&   a2enmod rewrite 
 
 ADD php.ini /etc/php/5.6/apache2/php.ini
-
+ADD 000-default.conf /etc/apache2/sites-enabled/000-default.conf
 
 ENTRYPOINT service apache2 start && bash
