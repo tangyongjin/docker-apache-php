@@ -1,58 +1,28 @@
 FROM ubuntu:14.04
 
-ENV DEBIAN_FRONTEND noninteractive
+RUN apt-get update && apt-get install -y locales && rm -rf /var/lib/apt/lists/* \
+    && localedef -i en_US -c -f UTF-8 -A /usr/share/locale/locale.alias en_US.UTF-8
+ENV LANG en_US.utf8
+ENV TERM  vt100
 
-# Update sources
-ADD sources.list  /etc/apt/sources.list
-RUN apt-get update -y  &&  rm -rf /var/lib/apt/lists/*
-
-RUN echo "Asia/Chongqing" > /etc/timezone
-RUN sudo dpkg-reconfigure -f noninteractive tzdata
-
-
-RUN mkdir -p /var/lock/apache2 /var/run/apache2
-
-RUN apt-get -qq update && apt-get install -y \
-  apache2 \
-  vim  \
-  unzip \
-  php5  \
-  php5-mysql \ 
-  php5-dev \
-  php5-mcrypt \
-  php5-curl \
-  mcrypt \
-  php5-gd \
-  php5-memcache \ 
-  php5-pspell \
-  php5-snmp \
-  snmp \
-  php5-xmlrpc \ 
-  libapache2-mod-php5 \ 
-  php5-cli  \
-  fontconfig
-
-
-RUN sudo php5enmod mcrypt
-RUN a2enmod rewrite
-
-
-COPY php.ini /etc/php5/apache2/php.ini
-
-
-### change  apache2.conf
-RUN sed -i  '/<Directory \/var\/www\/>/,/<\/Directory>/ s/AllowOverride None/AllowOverride all/' /etc/apache2/apache2.conf
+RUN apt-get update && apt-get install -y  software-properties-common
+RUN add-apt-repository ppa:ondrej/php
+RUN apt-get update  &&   apt-get install -y  php5.6 \
+    php5.6-mbstring  \
+    php5.6-mcrypt \
+    php5.6-mysql \
+    php5.6-xml \
+    php5.6-curl \ 
+    php5.6-gd  \
+    php5.6-cli 
 
 
 
 
-#### set chinese font ####
-RUN mkdir -p /usr/local/share/fonts/truetype/simhei  && mkdir -p /var/www/.ssh
-COPY chinese.simhei.ttf  /usr/local/share/fonts/truetype/simhei/chinese.simhei.ttf
-RUN  chown root  /usr/local/share/fonts/truetype/simhei/chinese.simhei.ttf &&  fc-cache -f -v
+RUN add-apt-repository -y ppa:ondrej/apache2
+RUN apt-get update  &&   apt-get -y install apache2 &&   a2enmod rewrite 
 
+ADD php.ini /etc/php/5.6/apache2/php.ini
 
-#### gvie www-data a shell ###
-RUN sed -i  '/^www-data/ s/usr\/sbin\/nologin/bin\/bash/g'  /etc/passwd
 
 ENTRYPOINT service apache2 start && bash
