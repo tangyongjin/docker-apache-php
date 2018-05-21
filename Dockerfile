@@ -21,6 +21,12 @@ RUN apt-get update  &&   apt-get install -y  php5.6 \
 
 RUN add-apt-repository -y ppa:ondrej/apache2
 RUN apt-get update  &&   apt-get -y install apache2 &&   a2enmod rewrite 
+RUN apt-get update  &&   apt-get -y install curl
+RUN curl -sS https://getcomposer.org/installer | php
+RUN chmod +x composer.phar && mv composer.phar /usr/local/bin/composer
+
+
+
 
 ADD php.ini /etc/php/5.6/apache2/php.ini
 ADD 000-default.conf /etc/apache2/sites-enabled/000-default.conf
